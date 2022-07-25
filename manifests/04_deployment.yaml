@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  #annotations:
+  #  reloader.stakater.com/auto: "true"
+  name: nginx
+  namespace: external-secrets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: nginx
+      app.kubernetes.io/name: nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: nginx
+        app.kubernetes.io/name: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        tty: true
+        stdin: true
+        resources: {}
+        volumeMounts:
+        - name: mysecret
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: mysecret
+        secret:
+          secretName: credentials-test
+          items:
+          - key: password
+            path: index.html
+
